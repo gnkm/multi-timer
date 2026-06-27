@@ -2,6 +2,75 @@
 
 仕様は [org.md](./org.md) を参照。技術スタックは React 19.2（React Compiler 有効）/ Zustand / Tailwind v4 / react-hook-form + zod / lucide-react。
 
+## ディレクトリ構成
+
+`src/` 以下は役割で分ける。UI は `components/`、共有 state は `stores/`、副作用は `hooks/`、UI に依存しないロジックは `lib/` に置く。
+
+```
+src/
+├── main.tsx                        # エントリポイント
+├── app/
+│   └── app.tsx                     # 組み立て・副作用 hook の起点
+├── components/
+│   ├── layout/
+│   │   └── app-shell.tsx           # 全画面の外枠（背景など）
+│   ├── app-header/
+│   │   ├── app-header.tsx
+│   │   ├── add-timer-button.tsx
+│   │   └── theme-toggle-button.tsx
+│   ├── timer/
+│   │   ├── timer-card-list.tsx
+│   │   ├── timer-card.tsx
+│   │   ├── progress-ring.tsx
+│   │   ├── timer-display.tsx
+│   │   ├── timer-controls.tsx
+│   │   └── timer-edit-form.tsx
+│   └── maximized-timer-view.tsx
+├── hooks/
+│   ├── use-timer-tick.ts
+│   ├── use-completion-favicon.ts
+│   └── use-escape-to-minimize.ts
+├── lib/                            # 純関数・定数・zod スキーマなど
+├── stores/                         # Zustand ストア
+├── types/                          # ドメイン型
+├── styles/
+└── test/                           # テスト用セットアップ
+```
+
+### 各ディレクトリの責務
+
+| ディレクトリ | 入れるもの |
+| --- | --- |
+| `app/` | `App` のみ。子コンポーネントを並べ、hook を呼ぶ |
+| `components/` | 見た目・UI。下記コンポーネント木に対応 |
+| `hooks/` | カウントダウン tick、favicon、キーボードなどの副作用 |
+| `lib/` | 時間計算、定数、フォーム検証スキーマなど |
+| `stores/` | `timers` と UI state（最大化・編集・テーマ） |
+| `types/` | `Timer` などドメイン型 |
+
+### 命名
+
+- ファイル名: `kebab-case.tsx`（例: `timer-card.tsx`）
+- コンポーネント名: `PascalCase`（例: `TimerCard`）
+- テスト: 対象ファイルの隣に `*.test.tsx` を置く
+
+### コンポーネントとパスの対応
+
+| コンポーネント | パス |
+| --- | --- |
+| `App` | `app/app.tsx` |
+| `AppShell` | `components/layout/app-shell.tsx` |
+| `AppHeader` | `components/app-header/app-header.tsx` |
+| `AddTimerButton` | `components/app-header/add-timer-button.tsx` |
+| `ThemeToggleButton` | `components/app-header/theme-toggle-button.tsx` |
+| `TimerCardList` | `components/timer/timer-card-list.tsx` |
+| `TimerCard` | `components/timer/timer-card.tsx` |
+| `ProgressRing` | `components/timer/progress-ring.tsx` |
+| `TimerDisplay` | `components/timer/timer-display.tsx` |
+| `TimerControls` | `components/timer/timer-controls.tsx` |
+| `TimerEditForm` | `components/timer/timer-edit-form.tsx` |
+| `MaximizedTimerView` | `components/maximized-timer-view.tsx` |
+
 ## コンポーネント
 
 ```
