@@ -1,5 +1,5 @@
 {
-  "name": "react-app-template",
+  "name": "multi-timer",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -60,7 +60,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "happy-dom": "^20.10.6",
     "lefthook": "^2.1.9",
-    "msw": "^2.14.6",
     "tailwindcss": "^4.3.1",
     "typescript": "^6.0.3",
     "vite": "^8.1.0",
