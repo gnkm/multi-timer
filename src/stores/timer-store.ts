@@ -24,6 +24,7 @@ type TimerStoreActions = {
   resetTimer: (id: string) => void;
   startTimer: (id: string) => void;
   stopTimer: (id: string) => void;
+  tick: () => void;
   toggleStartStop: (id: string) => void;
 };
 
@@ -183,6 +184,46 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
         status: "stopped",
       })),
     }));
+  },
+
+  tick: () => {
+    set((state) => {
+      const now = Date.now();
+      let runtimeByTimerId = state.runtimeByTimerId;
+      let changed = false;
+
+      const timers = state.timers.map((timer): Timer => {
+        if (timer.status !== "running") return timer;
+
+        const runtime = runtimeByTimerId[timer.id];
+        if (!runtime) return timer;
+
+        const remaining = getRemainingSecondsAt(
+          runtime.remainingAtStart,
+          runtime.startedAt,
+          now,
+        );
+
+        if (remaining === timer.remainingSeconds) return timer;
+
+        changed = true;
+
+        if (remaining === 0) {
+          runtimeByTimerId = clearRuntime(runtimeByTimerId, timer.id);
+          return {
+            ...timer,
+            remainingSeconds: 0,
+            status: "completed",
+          };
+        }
+
+        return { ...timer, remainingSeconds: remaining };
+      });
+
+      if (!changed) return state;
+
+      return { timers, runtimeByTimerId };
+    });
   },
 }));
 
