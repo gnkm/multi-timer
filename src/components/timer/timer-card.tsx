@@ -9,7 +9,7 @@ export function TimerCard({ timer }: { timer: Timer }) {
       ? 0
       : timer.remainingSeconds / timer.initialSeconds;
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white/90 p-6 shadow-sm backdrop-blur-sm dark:border-zinc-800/80 dark:bg-zinc-900/70">
+    <div className="flex flex-col items-center gap-4 rounded-2xl border border-zinc-200/80 bg-white/90 p-6 shadow-sm backdrop-blur-sm dark:border-zinc-800/80 dark:bg-zinc-900/70">
       <ProgressRing progress={progress} status={timer.status}>
         <TimerDisplay timer={timer} />
       </ProgressRing>
