@@ -7,8 +7,13 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 type ProgressRingProps = {
   children: ReactNode;
   progress: number;
+  size?: "default" | "large";
   status: TimerStatus;
 };
+
+function getRingSizeClassName(size: ProgressRingProps["size"]): string {
+  return size === "large" ? "size-72 sm:size-96" : "size-48";
+}
 
 function getProgressStrokeClass(status: TimerStatus): string {
   switch (status) {
@@ -24,6 +29,7 @@ function getProgressStrokeClass(status: TimerStatus): string {
 export function ProgressRing({
   children,
   progress,
+  size = "default",
   status,
 }: ProgressRingProps) {
   const clampedProgress = Math.min(1, Math.max(0, progress));
@@ -35,7 +41,11 @@ export function ProgressRing({
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      <svg viewBox="0 0 100 100" className="size-48" aria-hidden="true">
+      <svg
+        viewBox="0 0 100 100"
+        className={getRingSizeClassName(size)}
+        aria-hidden="true"
+      >
         <circle
           cx="50"
           cy="50"

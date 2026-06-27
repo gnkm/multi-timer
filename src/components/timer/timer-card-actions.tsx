@@ -1,5 +1,6 @@
 import { Maximize2, Pencil, Trash2 } from "lucide-react";
 import { useTimerStore } from "@/stores/timer-store";
+import { useUiStore } from "@/stores/ui-stores";
 import type { Timer } from "@/types/timer";
 import { TimerIconButton } from "./timer-icon-button";
 
@@ -18,6 +19,7 @@ export function TimerCardActions({
 }: TimerCardActionsProps) {
   const isStopped = timer.status === "stopped";
   const removeTimer = useTimerStore((state) => state.removeTimer);
+  const maximizeTimer = useUiStore((state) => state.maximizeTimer);
 
   return (
     <div className="absolute top-4 right-4 flex items-center gap-1">
@@ -28,7 +30,7 @@ export function TimerCardActions({
       >
         <Pencil aria-hidden="true" className="size-4" />
       </TimerIconButton>
-      <TimerIconButton label="最大化">
+      <TimerIconButton label="最大化" onClick={() => maximizeTimer(timer.id)}>
         <Maximize2 aria-hidden="true" className="size-4" />
       </TimerIconButton>
       <TimerIconButton disabled={!canDelete} label="削除">
