@@ -12,7 +12,10 @@ export function TimerAddTimeButtons({ timer }: TimerAddTimeButtonsProps) {
   const addSeconds = useTimerStore((state) => state.addSeconds);
 
   return (
-    <div className="flex items-center justify-center gap-2">
+    <div
+      aria-hidden={!isStopped}
+      className="flex items-center justify-center gap-2"
+    >
       <button
         type="button"
         className={cn(secondaryButtonClassName, "px-3 py-1.5 text-xs")}

@@ -17,7 +17,6 @@ export function TimerCard({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const progress = useSmoothProgress(timer);
-  const isStopped = timer.status === "stopped";
 
   return (
     <article className="relative flex flex-col gap-4 rounded-2xl border border-zinc-200/80 bg-white/90 p-6 pt-12 shadow-sm backdrop-blur-sm dark:border-zinc-800/80 dark:bg-zinc-900/70">
@@ -40,7 +39,7 @@ export function TimerCard({
             <TimerDisplay timer={timer} />
           </ProgressRing>
         )}
-        {isStopped && !isEditing ? <TimerAddTimeButtons timer={timer} /> : null}
+        <TimerAddTimeButtons timer={timer} />
       </div>
 
       <TimerPrimaryControls timer={timer} />
