@@ -8,6 +8,7 @@ export function createTimer(seconds: number = DEFAULT_INITIAL_SECONDS): Timer {
     id: crypto.randomUUID(),
     initialSeconds: seconds,
     remainingSeconds: seconds,
+    sessionTotalSeconds: seconds,
     status: "stopped",
   };
 }
@@ -64,15 +65,23 @@ export function getRemainingMsAt(
 }
 
 export function getProgressAt(
-  initialSeconds: number,
   remainingAtStart: number,
   startedAt: number,
   now = Date.now(),
 ): number {
-  if (initialSeconds === 0) return 0;
+  if (remainingAtStart === 0) return 0;
 
   const remainingMs = getRemainingMsAt(remainingAtStart, startedAt, now);
-  const initialMs = initialSeconds * 1000;
+  const totalMs = remainingAtStart * 1000;
 
-  return Math.min(1, Math.max(0, remainingMs / initialMs));
+  return Math.min(1, Math.max(0, remainingMs / totalMs));
+}
+
+export function getStoppedProgress(
+  sessionTotalSeconds: number,
+  remainingSeconds: number,
+): number {
+  if (sessionTotalSeconds === 0) return 0;
+
+  return remainingSeconds / sessionTotalSeconds;
 }

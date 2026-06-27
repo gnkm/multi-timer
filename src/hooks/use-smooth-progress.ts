@@ -1,6 +1,6 @@
 // hooks/use-smooth-progress.ts（新規）
 import { useEffect, useState } from "react";
-import { getProgressAt } from "@/lib/timer";
+import { getProgressAt, getStoppedProgress } from "@/lib/timer";
 import { useTimerStore } from "@/stores/timer-store";
 import type { Timer } from "@/types/timer";
 
@@ -23,14 +23,8 @@ export function useSmoothProgress(timer: Timer): number {
   }, [timer.status, runtime]);
 
   if (timer.status === "running" && runtime) {
-    return getProgressAt(
-      timer.initialSeconds,
-      runtime.remainingAtStart,
-      runtime.startedAt,
-      now,
-    );
+    return getProgressAt(runtime.remainingAtStart, runtime.startedAt, now);
   }
 
-  if (timer.initialSeconds === 0) return 0;
-  return timer.remainingSeconds / timer.initialSeconds;
+  return getStoppedProgress(timer.sessionTotalSeconds, timer.remainingSeconds);
 }

@@ -67,6 +67,7 @@ describe("useTimerStore", () => {
           id,
           initialSeconds: 0,
           remainingSeconds: 0,
+          sessionTotalSeconds: 0,
           status: "stopped",
         },
       ],
@@ -80,6 +81,7 @@ describe("useTimerStore", () => {
           id,
           initialSeconds: 10,
           remainingSeconds: 0,
+          sessionTotalSeconds: 10,
           status: "completed",
         },
       ],
@@ -100,6 +102,7 @@ describe("useTimerStore", () => {
           id,
           initialSeconds: 60,
           remainingSeconds: 42,
+          sessionTotalSeconds: 60,
           status: "completed",
         },
       ],
@@ -133,6 +136,7 @@ describe("useTimerStore", () => {
           id,
           initialSeconds: MAX_TIMER_SECONDS,
           remainingSeconds: MAX_TIMER_SECONDS - 5,
+          sessionTotalSeconds: MAX_TIMER_SECONDS - 5,
           status: "stopped",
         },
       ],
@@ -157,6 +161,7 @@ describe("useTimerStore", () => {
           id,
           initialSeconds: 60,
           remainingSeconds: 10,
+          sessionTotalSeconds: 60,
           status: "completed",
         },
       ],
@@ -168,5 +173,26 @@ describe("useTimerStore", () => {
     expect(timer?.initialSeconds).toBe(120);
     expect(timer?.remainingSeconds).toBe(120);
     expect(timer?.status).toBe("stopped");
+  });
+
+  test("再開後の停止でも sessionTotalSeconds を基準に進捗を保つ", () => {
+    const id = useTimerStore.getState().timers[0]?.id;
+    if (!id) {
+      throw new Error("timer id not found");
+    }
+
+    useTimerStore.getState().startTimer(id);
+    vi.advanceTimersByTime(55_000);
+    useTimerStore.getState().stopTimer(id);
+    expect(useTimerStore.getState().timers[0]?.remainingSeconds).toBe(5);
+
+    useTimerStore.getState().addSeconds(id, 60);
+    useTimerStore.getState().startTimer(id);
+    vi.advanceTimersByTime(10_000);
+    useTimerStore.getState().stopTimer(id);
+
+    const timer = useTimerStore.getState().timers[0];
+    expect(timer?.remainingSeconds).toBe(55);
+    expect(timer?.sessionTotalSeconds).toBe(65);
   });
 });

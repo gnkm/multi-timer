@@ -95,6 +95,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
         },
         timers: updateTimer(state.timers, id, (current) => ({
           ...current,
+          sessionTotalSeconds: timer.remainingSeconds,
           status: "running",
         })),
       };
@@ -143,6 +144,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
       timers: updateTimer(state.timers, id, (timer) => ({
         ...timer,
         remainingSeconds: timer.initialSeconds,
+        sessionTotalSeconds: timer.initialSeconds,
         status: "stopped",
       })),
     }));
@@ -167,6 +169,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
         timers: updateTimer(state.timers, id, (current) => ({
           ...current,
           remainingSeconds: nextRemaining,
+          sessionTotalSeconds: nextRemaining,
         })),
       };
     });
@@ -181,6 +184,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
         ...timer,
         initialSeconds: seconds,
         remainingSeconds: seconds,
+        sessionTotalSeconds: seconds,
         status: "stopped",
       })),
     }));
