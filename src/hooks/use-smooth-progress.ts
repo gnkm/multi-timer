@@ -4,6 +4,8 @@ import { getProgressAt } from "@/lib/timer";
 import { useTimerStore } from "@/stores/timer-store";
 import type { Timer } from "@/types/timer";
 
+const PROGRESS_UPDATE_INTERVAL_MS = 200;
+
 export function useSmoothProgress(timer: Timer): number {
   const runtime = useTimerStore((state) => state.runtimeByTimerId[timer.id]);
   const [now, setNow] = useState(() => Date.now());
@@ -13,15 +15,11 @@ export function useSmoothProgress(timer: Timer): number {
       return;
     }
 
-    let frameId = 0;
-
-    const loop = () => {
+    const intervalId = setInterval(() => {
       setNow(Date.now());
-      frameId = requestAnimationFrame(loop);
-    };
+    }, PROGRESS_UPDATE_INTERVAL_MS);
 
-    frameId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frameId);
+    return () => clearInterval(intervalId);
   }, [timer.status, runtime]);
 
   if (timer.status === "running" && runtime) {

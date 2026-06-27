@@ -28,6 +28,10 @@ export function ProgressRing({
 }: ProgressRingProps) {
   const clampedProgress = Math.min(1, Math.max(0, progress));
   const offset = CIRCUMFERENCE * (1 - clampedProgress);
+  const animatedProgressClass =
+    status === "running"
+      ? "transition-[stroke-dashoffset] duration-200 ease-linear"
+      : "";
 
   return (
     <div className="relative inline-flex items-center justify-center">
@@ -44,7 +48,7 @@ export function ProgressRing({
           cx="50"
           cy="50"
           r={RADIUS}
-          className={getProgressStrokeClass(status)}
+          className={`${getProgressStrokeClass(status)} ${animatedProgressClass}`}
           strokeWidth="4"
           fill="none"
           strokeLinecap="round"
