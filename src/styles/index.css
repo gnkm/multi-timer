@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    color-scheme: light dark;
+    @apply antialiased;
+  }
+
+  body {
+    @apply min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50;
+  }
+
+  ::selection {
+    @apply bg-zinc-900/15 dark:bg-zinc-100/20;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,23 @@
+glob_matcher: doublestar
+
+pre-commit:
+  commands:
+    biome:
+      glob: "**/*.{js,jsx,ts,tsx,json,jsonc,css,md}"
+      run: pnpm exec biome check --write --files-ignore-unknown=true --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+    eslint-hooks:
+      glob: "src/**/*.{ts,tsx}"
+      run: pnpm exec eslint {staged_files}
+    osv-scanner:
+      tags: security
+      glob: "pnpm-lock.yaml"
+      run: osv-scanner scan source --lockfile pnpm-lock.yaml
+    gitleaks:
+      tags: security
+      run: gitleaks git --staged --no-banner
+
+pre-push:
+  commands:
+    ci:
+      run: pnpm run ci
