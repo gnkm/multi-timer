@@ -35,3 +35,26 @@ export function formatRemainingSeconds(totalSeconds: number): string {
 
   return `${minutes}:${ss}`;
 }
+
+export function getRemainingMsAt(
+  remainingAtStart: number,
+  startedAt: number,
+  now = Date.now(),
+): number {
+  const elapsedMs = now - startedAt;
+  return Math.max(0, remainingAtStart * 1000 - elapsedMs);
+}
+
+export function getProgressAt(
+  initialSeconds: number,
+  remainingAtStart: number,
+  startedAt: number,
+  now = Date.now(),
+): number {
+  if (initialSeconds === 0) return 0;
+
+  const remainingMs = getRemainingMsAt(remainingAtStart, startedAt, now);
+  const initialMs = initialSeconds * 1000;
+
+  return Math.min(1, Math.max(0, remainingMs / initialMs));
+}

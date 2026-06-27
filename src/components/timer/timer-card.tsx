@@ -1,3 +1,4 @@
+import { useSmoothProgress } from "@/hooks/use-smooth-progress";
 import type { Timer } from "@/types/timer";
 import { ProgressRing } from "./progress-ring";
 import { TimerAddTimeButtons } from "./timer-add-time-buttons";
@@ -12,10 +13,7 @@ export function TimerCard({
   canDelete: boolean;
   timer: Timer;
 }) {
-  const progress =
-    timer.initialSeconds === 0
-      ? 0
-      : timer.remainingSeconds / timer.initialSeconds;
+  const progress = useSmoothProgress(timer);
 
   return (
     <article className="relative flex flex-col gap-4 rounded-2xl border border-zinc-200/80 bg-white/90 p-6 pt-12 shadow-sm backdrop-blur-sm dark:border-zinc-800/80 dark:bg-zinc-900/70">
