@@ -1,10 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, X } from "lucide-react";
 import { type UseFormRegister, useForm } from "react-hook-form";
-import {
-  buttonClassName,
-  inputClassName,
-  secondaryButtonClassName,
-} from "@/app/ui";
+import { buttonClassName, inputClassName } from "@/app/ui";
 import { cn } from "@/lib/cn";
 import { splitSeconds, toTotalSeconds } from "@/lib/timer";
 import {
@@ -13,6 +10,7 @@ import {
 } from "@/lib/timer-edit-form-schema";
 import { useTimerStore } from "@/stores/timer-store";
 import type { Timer } from "@/types/timer";
+import { TimerIconButton } from "./timer-icon-button";
 
 type TimerEditFormProps = {
   onCancel: () => void;
@@ -148,16 +146,16 @@ export function TimerEditForm({
         </p>
       ) : null}
       <div className="flex items-center justify-center gap-2">
-        <button
-          type="button"
-          className={secondaryButtonClassName}
-          onClick={onCancel}
+        <TimerIconButton label="キャンセル" onClick={onCancel}>
+          <X aria-hidden="true" className="size-5" />
+        </TimerIconButton>
+        <TimerIconButton
+          className={cn(buttonClassName, "size-9 shrink-0 p-0")}
+          label="保存"
+          type="submit"
         >
-          キャンセル
-        </button>
-        <button type="submit" className={buttonClassName}>
-          保存
-        </button>
+          <Check aria-hidden="true" className="size-5" />
+        </TimerIconButton>
       </div>
     </form>
   );
