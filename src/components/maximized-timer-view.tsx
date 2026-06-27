@@ -1,4 +1,5 @@
 import { Minimize2 } from "lucide-react";
+import { useEffect } from "react";
 import { useSmoothProgress } from "@/hooks/use-smooth-progress";
 import { cn } from "@/lib/cn";
 import { useUiStore } from "@/stores/ui-stores";
@@ -11,6 +12,17 @@ import { TimerPrimaryControls } from "./timer/timer-primary-controls";
 export function MaximizedTimerView({ timer }: { timer: Timer }) {
   const progress = useSmoothProgress(timer);
   const minimizeTimer = useUiStore((state) => state.minimizeTimer);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        minimizeTimer();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [minimizeTimer]);
 
   return (
     <div
