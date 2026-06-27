@@ -21,10 +21,28 @@ export function getRemainingSecondsAt(
   return Math.max(0, remainingAtStart - elapsed);
 }
 
-export function formatRemainingSeconds(totalSeconds: number): string {
+export function splitSeconds(totalSeconds: number): {
+  hours: number;
+  minutes: number;
+  seconds: number;
+} {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
+
+  return { hours, minutes, seconds };
+}
+
+export function toTotalSeconds(
+  hours: number,
+  minutes: number,
+  seconds: number,
+): number {
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
+export function formatRemainingSeconds(totalSeconds: number): string {
+  const { hours, minutes, seconds } = splitSeconds(totalSeconds);
 
   const mm = String(minutes).padStart(2, "0");
   const ss = String(seconds).padStart(2, "0");
