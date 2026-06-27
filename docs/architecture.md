@@ -1,6 +1,6 @@
 # Multi Timer Architecture
 
-仕様は [org.md](./org.md) を参照。技術スタックは React 19.2（React Compiler 有効）/ Zustand / TanStack Query / Tailwind v4 / react-hook-form + zod / lucide-react。
+仕様は [org.md](./org.md) を参照。技術スタックは React 19.2（React Compiler 有効）/ Zustand / Tailwind v4 / react-hook-form + zod / lucide-react。
 
 ## コンポーネント
 
