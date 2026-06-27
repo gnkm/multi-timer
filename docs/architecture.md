@@ -10,10 +10,11 @@
 src/
 ├── main.tsx                        # エントリポイント
 ├── app/
-│   └── app.tsx                     # 組み立て・副作用 hook の起点
+│   ├── app.tsx                     # 組み立て・副作用 hook の起点
+│   └── ui.ts                       # 共通ボタン・入力の className
 ├── components/
 │   ├── layout/
-│   │   └── app-shell.tsx           # 全画面の外枠（背景など）
+│   │   └── app-shell.tsx           # 背景・main レイアウト（flex-col）
 │   ├── app-header/
 │   │   ├── app-header.tsx
 │   │   ├── add-timer-button.tsx
@@ -21,9 +22,12 @@ src/
 │   ├── timer/
 │   │   ├── timer-card-list.tsx
 │   │   ├── timer-card.tsx
+│   │   ├── timer-card-actions.tsx      # カード右上（編集・最大化・削除）
+│   │   ├── timer-add-time-buttons.tsx  # 時間表示の下（+0:10 / +1:00）
+│   │   ├── timer-primary-controls.tsx  # カード下部（開始/停止・リセット）
+│   │   ├── timer-icon-button.tsx       # アイコンボタン共通
 │   │   ├── progress-ring.tsx
 │   │   ├── timer-display.tsx
-│   │   ├── timer-controls.tsx
 │   │   └── timer-edit-form.tsx
 │   └── maximized-timer-view.tsx
 ├── hooks/
@@ -31,8 +35,12 @@ src/
 │   ├── use-completion-favicon.ts
 │   └── use-escape-to-minimize.ts
 ├── lib/                            # 純関数・定数・zod スキーマなど
-├── stores/                         # Zustand ストア
-├── types/                          # ドメイン型
+│   ├── timer.ts                    # createTimer, formatRemainingSeconds 等
+│   └── cn.ts
+├── stores/
+│   └── timer-store.ts              # Zustand ストア
+├── types/
+│   └── timer.ts                    # Timer, TimerStatus
 ├── styles/
 └── test/                           # テスト用セットアップ
 ```
@@ -65,9 +73,12 @@ src/
 | `ThemeToggleButton` | `components/app-header/theme-toggle-button.tsx` |
 | `TimerCardList` | `components/timer/timer-card-list.tsx` |
 | `TimerCard` | `components/timer/timer-card.tsx` |
+| `TimerCardActions` | `components/timer/timer-card-actions.tsx` |
+| `TimerAddTimeButtons` | `components/timer/timer-add-time-buttons.tsx` |
+| `TimerPrimaryControls` | `components/timer/timer-primary-controls.tsx` |
+| `TimerIconButton` | `components/timer/timer-icon-button.tsx` |
 | `ProgressRing` | `components/timer/progress-ring.tsx` |
 | `TimerDisplay` | `components/timer/timer-display.tsx` |
-| `TimerControls` | `components/timer/timer-controls.tsx` |
 | `TimerEditForm` | `components/timer/timer-edit-form.tsx` |
 | `MaximizedTimerView` | `components/maximized-timer-view.tsx` |
 
@@ -80,12 +91,28 @@ App (layout)
 │   └─ ThemeToggleButton       ライト/ダーク切替
 ├─ TimerCardList               レスポンシブグリッド
 │   └─ TimerCard               1 タイマー（status で見た目を分岐）
+│       ├─ TimerCardActions    カード右上：編集・最大化・削除
 │       ├─ ProgressRing        12時から反時計回りの円形プログレス
-│       ├─ TimerDisplay        残り時間表示（H:MM:SS / MM:SS）
-│       ├─ TimerControls       開始/停止・リセット・最大化・削除・編集・+0:10・+1:00
+│       │   └─ TimerDisplay    残り時間表示（H:MM:SS / MM:SS）
+│       ├─ TimerAddTimeButtons 時間表示の下：+0:10・+1:00
+│       ├─ TimerPrimaryControls カード下部：開始/停止・リセット
 │       └─ TimerEditForm       編集 UI（Google タイマー風 / 実行中は非表示・不可）
 └─ MaximizedTimerView          最大化中のみ表示（オーバーレイ。TimerCard を大表示で再利用）
 ```
+
+### TimerCard のレイアウト
+
+```
+┌───────────────────────────── [編集][最大化][削除] ┐
+│                    ◯ ProgressRing                  │
+│                   TimerDisplay                     │
+│               [+ 0:10] [+ 1:00]                    │
+├────────────────────────────────────────────────────┤
+│              [開始/停止]  [リセット]                │
+└────────────────────────────────────────────────────┘
+```
+
+操作ボタンは配置ごとにコンポーネントを分割する。`TimerIconButton` でアイコンボタンの `aria-label` とスタイルを共通化する。
 
 ### 各コンポーネントの責務
 
@@ -96,10 +123,13 @@ App (layout)
 | `AddTimerButton` | 「+」でタイマーを 1 件追加（初期時間 1:00） |
 | `ThemeToggleButton` | ライト/ダークをアプリ内トグルで切替 |
 | `TimerCardList` | timers を `map()` し、`key={timer.id}` でグリッド表示 |
-| `TimerCard` | 1 タイマーの表示。`status` で見た目（通常/実行中/完了）を分岐 |
+| `TimerCard` | 1 タイマーの表示・組み立て。`progress` を算出し子コンポーネントへ渡す |
+| `TimerCardActions` | カード右上に配置。編集・最大化・削除（削除は `canDelete` で制御） |
+| `TimerAddTimeButtons` | 時間表示の下に配置。`+0:10` / `+1:00`（停止中のみ活性、上限超過時はインラインメッセージ） |
+| `TimerPrimaryControls` | カード下部に配置。開始/停止（1 ボタンで切替）・リセット |
+| `TimerIconButton` | アイコンボタン共通。`aria-label`・focus スタイルを統一 |
 | `ProgressRing` | 進捗率を円形プログレスで描画（12 時から反時計回りに減少） |
 | `TimerDisplay` | 残り秒を `H:MM:SS` / `MM:SS` に整形して表示 |
-| `TimerControls` | 操作ボタン群。`+0:10` / `+1:00` は停止中のみ活性、上限超過時はインラインメッセージ |
 | `TimerEditForm` | 編集フォーム。`react-hook-form` + `zod` で 1 秒単位・上限 99:59:59 を検証 |
 | `MaximizedTimerView` | 最大化表示。最小化ボタン / Esc で一覧に戻る |
 
@@ -122,6 +152,7 @@ type Timer = {
 
 - 排他状態（実行中/完了）は別フラグにせず `status` 1 つで表す（矛盾する state を避ける）。
 - UI state（`maximizedTimerId` / `editingTimerId` / `theme`）は timers と分離して持つ。
+- 実行中のカウントダウン計算用データ（`startedAt` / `remainingAtStart`）はストアの `runtimeByTimerId` に保持し、`Timer` 型には含めない。
 - イミュータブル更新（追加は `[...timers, t]`、削除は `filter`、更新は `map`）。
 
 ### 派生値（state にしない / レンダー中に計算）
@@ -131,7 +162,7 @@ type Timer = {
 | 進捗率 | `ProgressRing` | `remainingSeconds / initialSeconds` |
 | 表示文字列 | `TimerDisplay` | `remainingSeconds` を整形 |
 | いずれか完了か | favicon / タブ | `timers.some(t => t.status === 'completed')` |
-| 削除可否 | `TimerControls` | `timers.length > 1` |
+| 削除可否 | `TimerCardActions` | `timers.length > 1`（`TimerCardList` から `canDelete` として渡す） |
 
 ## カウントダウン
 
