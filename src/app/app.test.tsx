@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import { HomePage } from "@/app/pages/home-page";
+import { App } from "@/app/app";
 
-describe("HomePage", () => {
+describe("App", () => {
   test("タイトルを表示する", () => {
-    render(<HomePage />);
+    render(<App />);
 
     expect(
       screen.getByRole("heading", { name: "Multi Timer" }),

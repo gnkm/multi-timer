@@ -11,7 +11,7 @@ export default mergeConfig(
       coverage: {
         provider: "v8",
         reporter: ["text", "html"],
-        exclude: ["**/*.test.{ts,tsx}", "src/test/**", "src/routeTree.gen.ts"],
+        exclude: ["**/*.test.{ts,tsx}", "src/test/**"],
       },
     },
   }),
